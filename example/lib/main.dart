@@ -32,6 +32,7 @@ class FlutterBlueApp extends StatelessWidget {
   }
 }
 
+//Initial page prompting user to scan devices
 class BluetoothOffScreen extends StatelessWidget {
   const BluetoothOffScreen({Key? key, this.state}) : super(key: key);
 
@@ -64,6 +65,9 @@ class BluetoothOffScreen extends StatelessWidget {
   }
 }
 
+
+
+//List of devices found by the scan
 class FindDevicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -151,6 +155,8 @@ class FindDevicesScreen extends StatelessWidget {
   }
 }
 
+
+//Specific device options screen (when tapping connect from devices list)
 class DeviceScreen extends StatelessWidget {
   const DeviceScreen({Key? key, required this.device}) : super(key: key);
 
