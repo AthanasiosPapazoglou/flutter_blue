@@ -13,6 +13,7 @@ class ScanResultTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   //Method 1
+  //This is the name of a scanned device
   Widget _buildTitle(BuildContext context) {
     if (result.device.name.length > 0) {
       return Column(
@@ -35,6 +36,7 @@ class ScanResultTile extends StatelessWidget {
   }
 
   //Method 2
+  //This is an informational text regarding a scanned device
   Widget _buildAdvRow(BuildContext context, String title, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
@@ -62,37 +64,43 @@ class ScanResultTile extends StatelessWidget {
 
 
   //func 1
-  String getNiceHexArray(List<int> bytes) {
+  //Generates a Hex Array
+  String getHexArray(List<int> bytes) {
     return '[${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}]'
         .toUpperCase();
   }
 
   //func 2
-  String getNiceManufacturerData(Map<int, List<int>> data) {
+  //Returns string of manufacturerData
+  String getManufacturerData(Map<int, List<int>> data) {
     if (data.isEmpty) {
       return 'N/A';
     }
     List<String> res = [];
     data.forEach((id, bytes) {
       res.add(
-          '${id.toRadixString(16).toUpperCase()}: ${getNiceHexArray(bytes)}');
+          '${id.toRadixString(16).toUpperCase()}: ${getHexArray(bytes)}');
     });
     return res.join(', ');
   }
 
   //func 3
-  String getNiceServiceData(Map<String, List<int>> data) {
+  //Returns string of serviceData
+  String getServiceData(Map<String, List<int>> data) {
     if (data.isEmpty) {
       return 'N/A';
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id.toUpperCase()}: ${getNiceHexArray(bytes)}');
+      res.add('${id.toUpperCase()}: ${getHexArray(bytes)}');
     });
     return res.join(', ');
   }
 
   //Actual ScanResultTile Widget
+  //This is the ListTile UI item of every device in the list (name,details,connect button)
+  //Tap body to expand further information, tap 'CONNECT' button to connect and navigate
+  //to the specific device option Page
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
@@ -111,7 +119,7 @@ class ScanResultTile extends StatelessWidget {
         _buildAdvRow(context, 'Tx Power Level',
             '${result.advertisementData.txPowerLevel ?? 'N/A'}'),
         _buildAdvRow(context, 'Manufacturer Data',
-            getNiceManufacturerData(result.advertisementData.manufacturerData)),
+            getManufacturerData(result.advertisementData.manufacturerData)),
         _buildAdvRow(
             context,
             'Service UUIDs',
@@ -119,13 +127,14 @@ class ScanResultTile extends StatelessWidget {
                 ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
                 : 'N/A'),
         _buildAdvRow(context, 'Service Data',
-            getNiceServiceData(result.advertisementData.serviceData)),
+            getServiceData(result.advertisementData.serviceData)),
       ],
     );
   }
 }
 
 //Widget 2
+//This is the service expanded tile in the specific device options Page
 class ServiceTile extends StatelessWidget {
   final BluetoothService service;
   final List<CharacteristicTile> characteristicTiles;
@@ -163,6 +172,9 @@ class ServiceTile extends StatelessWidget {
 }
 
 //Widget 3
+//This is the characteristic tile that is being displayed withing the expanded service tile
+//The reference call is being made by the specific device options page Though, not from
+//the expanded service tile widget
 class CharacteristicTile extends StatelessWidget {
   final BluetoothCharacteristic characteristic;
   final List<DescriptorTile> descriptorTiles;
@@ -237,6 +249,7 @@ class CharacteristicTile extends StatelessWidget {
 
 
 //Widget 4
+//Probably another tile (can't find though)
 class DescriptorTile extends StatelessWidget {
   final BluetoothDescriptor descriptor;
   final VoidCallback? onReadPressed;
@@ -294,6 +307,7 @@ class DescriptorTile extends StatelessWidget {
 }
 
 //Widget 5
+//Some other info tile (cant find either)
 class AdapterStateTile extends StatelessWidget {
   const AdapterStateTile({Key? key, required this.state}) : super(key: key);
 

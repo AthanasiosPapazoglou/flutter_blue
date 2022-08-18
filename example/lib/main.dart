@@ -289,6 +289,7 @@ class DeviceScreen extends StatelessWidget {
             StreamBuilder<int>(
               stream: device.mtu,
               initialData: 0,
+              //this builder is creating the MTU Size area of the specifc device options page
               builder: (c, snapshot) => ListTile(
                 title: Text('MTU Size'),
                 subtitle: Text('${snapshot.data} bytes'),
