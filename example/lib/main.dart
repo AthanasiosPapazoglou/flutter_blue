@@ -32,7 +32,7 @@ class FlutterBlueApp extends StatelessWidget {
   }
 }
 
-//Initial page prompting user to scan devices
+//Initial Loading Launch Page
 class BluetoothOffScreen extends StatelessWidget {
   const BluetoothOffScreen({Key? key, this.state}) : super(key: key);
 
@@ -64,7 +64,6 @@ class BluetoothOffScreen extends StatelessWidget {
     );
   }
 }
-
 
 
 //List of devices found by the scan
@@ -119,6 +118,7 @@ class FindDevicesScreen extends StatelessWidget {
                       .map(
                         (r) => ScanResultTile(
                           result: r,
+                          //The onTap will redirect to the specific device options page
                           onTap: () => Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
                             r.device.connect();
@@ -220,6 +220,7 @@ class DeviceScreen extends StatelessWidget {
               VoidCallback? onPressed;
               String text;
               switch (snapshot.data) {
+                //This is the connect/disconnect appbar button at specific device page
                 case BluetoothDeviceState.connected:
                   onPressed = () => device.disconnect();
                   text = 'DISCONNECT';
@@ -265,6 +266,7 @@ class DeviceScreen extends StatelessWidget {
                   builder: (c, snapshot) => IndexedStack(
                     index: snapshot.data! ? 1 : 0,
                     children: <Widget>[
+                      //This is the refresh button that pops services
                       IconButton(
                         icon: Icon(Icons.refresh),
                         onPressed: () => device.discoverServices(),

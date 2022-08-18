@@ -12,6 +12,7 @@ class ScanResultTile extends StatelessWidget {
   final ScanResult result;
   final VoidCallback? onTap;
 
+  //Method 1
   Widget _buildTitle(BuildContext context) {
     if (result.device.name.length > 0) {
       return Column(
@@ -33,6 +34,7 @@ class ScanResultTile extends StatelessWidget {
     }
   }
 
+  //Method 2
   Widget _buildAdvRow(BuildContext context, String title, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
@@ -58,11 +60,14 @@ class ScanResultTile extends StatelessWidget {
     );
   }
 
+
+  //func 1
   String getNiceHexArray(List<int> bytes) {
     return '[${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}]'
         .toUpperCase();
   }
 
+  //func 2
   String getNiceManufacturerData(Map<int, List<int>> data) {
     if (data.isEmpty) {
       return 'N/A';
@@ -75,6 +80,7 @@ class ScanResultTile extends StatelessWidget {
     return res.join(', ');
   }
 
+  //func 3
   String getNiceServiceData(Map<String, List<int>> data) {
     if (data.isEmpty) {
       return 'N/A';
@@ -86,11 +92,13 @@ class ScanResultTile extends StatelessWidget {
     return res.join(', ');
   }
 
+  //Actual ScanResultTile Widget
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: _buildTitle(context),
       leading: Text(result.rssi.toString()),
+      //This is the Connect button on the right side of every displayed device of the scan list
       trailing: RaisedButton(
         child: Text('CONNECT'),
         color: Colors.black,
@@ -117,6 +125,7 @@ class ScanResultTile extends StatelessWidget {
   }
 }
 
+//Widget 2
 class ServiceTile extends StatelessWidget {
   final BluetoothService service;
   final List<CharacteristicTile> characteristicTiles;
@@ -133,6 +142,7 @@ class ServiceTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+          //This is the Service area of specific device page
             Text('Service'),
             Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}',
                 // style: Theme.of(context).textTheme.body1?.copyWith(
@@ -152,6 +162,7 @@ class ServiceTile extends StatelessWidget {
   }
 }
 
+//Widget 3
 class CharacteristicTile extends StatelessWidget {
   final BluetoothCharacteristic characteristic;
   final List<DescriptorTile> descriptorTiles;
@@ -224,6 +235,8 @@ class CharacteristicTile extends StatelessWidget {
   }
 }
 
+
+//Widget 4
 class DescriptorTile extends StatelessWidget {
   final BluetoothDescriptor descriptor;
   final VoidCallback? onReadPressed;
@@ -280,6 +293,7 @@ class DescriptorTile extends StatelessWidget {
   }
 }
 
+//Widget 5
 class AdapterStateTile extends StatelessWidget {
   const AdapterStateTile({Key? key, required this.state}) : super(key: key);
 
