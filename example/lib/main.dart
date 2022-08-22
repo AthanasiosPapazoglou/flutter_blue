@@ -7,27 +7,79 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_example/provider.dart';
 import 'package:flutter_blue_example/widgets.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(FlutterBlueApp());
 }
 
-class FlutterBlueApp extends StatelessWidget {
+class FlutterBlueApp extends StatefulWidget {
+  @override
+  State<FlutterBlueApp> createState() => _FlutterBlueAppState();
+}
+
+class _FlutterBlueAppState extends State<FlutterBlueApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    
+    // FlutterBlue.instance.startScan(timeout: Duration(seconds: 4));
+    
+    // StreamBuilder<List<ScanResult>>(
+    //   stream: FlutterBlue.instance.scanResults,
+    //   initialData: [],
+    //   builder: (c, snapshot) {
+    //     // snapshot.data!.map((r) {
+    //     //   if (r.device.name == 'Fanstel') {
+    //     //     //Timer.periodic(Duration(seconds: 5), (timer) {
+    //     //     r.device.connect();
+    //     //     //});
+    //     //     return print('fuck yo life');
+    //     //   }
+    //     // });
+    //     return Column(
+    //       children: snapshot.data!
+    //           .map(
+    //             (r) => ScanResultTile(
+    //               result: r,
+    //               //The onTap will redirect to the specific device options page
+    //               onTap: () => Navigator.of(context)
+    //                   .push(MaterialPageRoute(builder: (context) {
+    //                 print('Fanstel: ${r.device.name}');
+    //                 r.device.connect();
+    //                 // providerData.scanedDevice = r.device;
+    //                 // providerData.refreshValues();
+    //                 return DeviceScreen(device: r.device);
+    //               })),
+    //             ),
+    //           )
+    //           .toList(),
+    //     );
+    //   },
+    // );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      color: Colors.lightBlue,
-      home: StreamBuilder<BluetoothState>(
-          stream: FlutterBlue.instance.state,
-          initialData: BluetoothState.unknown,
-          builder: (c, snapshot) {
-            final state = snapshot.data;
-            if (state == BluetoothState.on) {
-              return FindDevicesScreen();
-            }
-            return BluetoothOffScreen(state: state);
-          }),
+    return ChangeNotifierProvider(
+      create: (ctx) => BlueToothDeviceProvider(),
+      child: MaterialApp(
+        color: Colors.lightBlue,
+        home: StreamBuilder<BluetoothState>(
+            stream: FlutterBlue.instance.state,
+            initialData: BluetoothState.unknown,
+            builder: (c, snapshot) {
+              final state = snapshot.data;
+              if (state == BluetoothState.on) {
+                return FindDevicesScreen();
+              }
+              return BluetoothOffScreen(state: state);
+            }),
+      ),
     );
   }
 }
@@ -64,7 +116,6 @@ class BluetoothOffScreen extends StatelessWidget {
     );
   }
 }
-
 
 //List of devices found by the scan
 class FindDevicesScreen extends StatelessWidget {
@@ -113,21 +164,42 @@ class FindDevicesScreen extends StatelessWidget {
               StreamBuilder<List<ScanResult>>(
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
-                builder: (c, snapshot) => Column(
-                  children: snapshot.data!
-                      .map(
-                        (r) => ScanResultTile(
-                          result: r,
-                          //The onTap will redirect to the specific device options page
-                          onTap: () => Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            r.device.connect();
-                            return DeviceScreen(device: r.device);
-                          })),
-                        ),
-                      )
-                      .toList(),
-                ),
+                builder: (c, snapshot) {
+                  snapshot.data!.map((r) {
+                    if (r.device.name == 'Fanstel') {
+                      print(r.device.name);
+                      //Timer.periodic(Duration(seconds: 5), (timer) {
+                      r.device.connect();
+                      //});
+                    } else {
+                      print('not Fanstel');
+                    }
+                  });
+                  return Column(
+                    children: snapshot.data!
+                        .map(
+                          (r) => ScanResultTile(
+                            result: r,
+                            //The onTap will redirect to the specific device options page
+                            onTap: () => Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (context) {
+                              print(r.device.name);
+                              if (r.device.name == 'Fanstel') {
+                                print(r.device.name);
+                                //Timer.periodic(Duration(seconds: 5), (timer) {
+                                r.device.connect();
+                                //});
+                              } else {
+                                print('not Fanstel');
+                              }
+                              //r.device.connect();
+                              return DeviceScreen(device: r.device);
+                            })),
+                          ),
+                        )
+                        .toList(),
+                  );
+                },
               ),
             ],
           ),
@@ -154,7 +226,6 @@ class FindDevicesScreen extends StatelessWidget {
     );
   }
 }
-
 
 //Specific device options screen (when tapping connect from devices list)
 class DeviceScreen extends StatelessWidget {
