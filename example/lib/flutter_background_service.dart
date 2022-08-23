@@ -10,8 +10,8 @@ class FlutterBackgroundService implements Observable {
       FlutterBackgroundServicePlatform.instance;
 
   Future<bool> configure({
-    required IosConfiguration iosConfiguration,
-    required AndroidConfiguration androidConfiguration,
+     IosConfiguration iosConfiguration,
+     AndroidConfiguration androidConfiguration,
   }) =>
       _platform.configure(
         iosConfiguration: iosConfiguration,
@@ -32,9 +32,9 @@ class FlutterBackgroundService implements Observable {
   Future<bool> isRunning() => _platform.isServiceRunning();
 
   @override
-  void invoke(String method, [Map<String, dynamic>? arg]) =>
+  void invoke(String method, [Map<String, dynamic> arg]) =>
       _platform.invoke(method, arg);
 
   @override
-  Stream<Map<String, dynamic>?> on(String method) => _platform.on(method);
+  Stream<Map<String, dynamic>> on(String method) => _platform.on(method);
 }

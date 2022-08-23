@@ -5,7 +5,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 class BlueToothDeviceProvider extends ChangeNotifier{
 
-   late BluetoothDevice scanedDevice;
+  BluetoothDevice scanedDevice;
 
   refreshValues(){
     notifyListeners();

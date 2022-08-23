@@ -102,8 +102,7 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   @override
   void initState() {
     super.initState();
-    // BluetoothManager().scan();
-    // NotificationService().initNotifications(super.context);
+    scan();
   }
 
   @override

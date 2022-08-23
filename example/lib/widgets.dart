@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 class ScanResultTile extends StatelessWidget {
-  const ScanResultTile({Key? key, required this.result, this.onTap})
+  const ScanResultTile({Key key, @required this.result, this.onTap})
       : super(key: key);
 
   final ScanResult result;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   //Method 1
   //This is the name of a scanned device
@@ -140,7 +140,7 @@ class ServiceTile extends StatelessWidget {
   final List<CharacteristicTile> characteristicTiles;
 
   const ServiceTile(
-      {Key? key, required this.service, required this.characteristicTiles})
+      {Key key, @required this.service, @required this.characteristicTiles})
       : super(key: key);
 
   @override
@@ -178,14 +178,14 @@ class ServiceTile extends StatelessWidget {
 class CharacteristicTile extends StatelessWidget {
   final BluetoothCharacteristic characteristic;
   final List<DescriptorTile> descriptorTiles;
-  final VoidCallback? onReadPressed;
-  final VoidCallback? onWritePressed;
-  final VoidCallback? onNotificationPressed;
+  final VoidCallback onReadPressed;
+  final VoidCallback onWritePressed;
+  final VoidCallback onNotificationPressed;
 
   const CharacteristicTile(
-      {Key? key,
-      required this.characteristic,
-      required this.descriptorTiles,
+      {Key key,
+      @required this.characteristic,
+      @required this.descriptorTiles,
       this.onReadPressed,
       this.onWritePressed,
       this.onNotificationPressed})
@@ -252,12 +252,12 @@ class CharacteristicTile extends StatelessWidget {
 //Probably another tile (can't find though)
 class DescriptorTile extends StatelessWidget {
   final BluetoothDescriptor descriptor;
-  final VoidCallback? onReadPressed;
-  final VoidCallback? onWritePressed;
+  final VoidCallback onReadPressed;
+  final VoidCallback onWritePressed;
 
   const DescriptorTile(
-      {Key? key,
-      required this.descriptor,
+      {Key key,
+      @required this.descriptor,
       this.onReadPressed,
       this.onWritePressed})
       : super(key: key);
@@ -309,7 +309,7 @@ class DescriptorTile extends StatelessWidget {
 //Widget 5
 //Some other info tile (cant find either)
 class AdapterStateTile extends StatelessWidget {
-  const AdapterStateTile({Key? key, required this.state}) : super(key: key);
+  const AdapterStateTile({Key key, @required this.state}) : super(key: key);
 
   final BluetoothState state;
 
