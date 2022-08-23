@@ -18,82 +18,82 @@ BluetoothDevice _device;
 FlutterBlue _flutterBlue = FlutterBlue.instance;
 
 void main() async {
-  //await initializeService();
+  await initializeService();
 
   runApp(FlutterBlueApp());
 }
 
 //! SCAN
-// scan() async {
-//   var connectedDevices = await FlutterBlue.instance.connectedDevices;
-//   bool isButtonConnected = false;
-//   connectedDevices.forEach((e) {
-//     print("device id: ${e.name}");
-//     if(isButtonConnected){
-//         return;
-//       }
-//       if(e.name == 'Fanstel'){
-//         isButtonConnected=true;
-//       }
-//    });
+scan() async {
+  var connectedDevices = await FlutterBlue.instance.connectedDevices;
+  bool isButtonConnected = false;
+  connectedDevices.forEach((e) {
+    print("device id: ${e.name}");
+    if(isButtonConnected){
+        return;
+      }
+      if(e.name == 'Fanstel'){
+        isButtonConnected=true;
+      }
+   });
 
-//    if(connectedDevices.isEmpty){
-//     FlutterBlue.instance.scan().listen((scanResult) async { 
-//       print('something');
-//       if (scanResult.advertisementData.serviceUuids.contains((Platform.isIOS)
-//             ? serviceUUID.toString().toUpperCase()
-//             : serviceUUID.toString())) {
-//           print("res=" + scanResult.toString());
-//           print('device=${scanResult.device.toString()}');
-//           _device = scanResult.device;
-//           _flutterBlue.stopScan();
+   if(connectedDevices.isEmpty){
+    FlutterBlue.instance.scan().listen((scanResult) async { 
+      print('something');
+      if (scanResult.advertisementData.serviceUuids.contains((Platform.isIOS)
+            ? serviceUUID.toString().toUpperCase()
+            : serviceUUID.toString())) {
+          print("res=" + scanResult.toString());
+          print('device=${scanResult.device.toString()}');
+          _device = scanResult.device;
+          _flutterBlue.stopScan();
 
-//           _device.connect();
-//           //connectToDevice(_device.name);
-//         }
-//       });
-//    } else {
-//     print('connected devices: ${(await _flutterBlue.connectedDevices).first.id.id}');
-//    }
-// }
+          _device.connect();
+          //connectToDevice(_device.name);
+        }
+      });
+   } else {
+    print('connected devices: ${(await _flutterBlue.connectedDevices).first.id.id}');
+   }
+}
 
 //! INITIALIZE
-// Future<void> initializeService() async {
-//   final service = FlutterBackgroundService();
-//   await service.configure(
-//     androidConfiguration: AndroidConfiguration(
-//       // this will be executed when app is in foreground or background in separated isolate
-//       onStart: onStart,
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      // this will be executed when app is in foreground or background in separated isolate
+      onStart: onStart,
 
-//       // auto start service
-//       autoStart: true,
-//       isForegroundMode: true,
-//     ),
-//     iosConfiguration: IosConfiguration(
-//       // auto start service
-//       autoStart: true,
+      // auto start service
+      autoStart: true,
+      isForegroundMode: true,
+    ),
+    iosConfiguration: IosConfiguration(
+      // auto start service
+      autoStart: true,
 
-//       // this will be executed when app is in foreground in separated isolate
-//       onForeground: onStart,
+      // this will be executed when app is in foreground in separated isolate
+      onForeground: onStart,
 
-//       // you have to enable background fetch capability on xcode project
-//       onBackground: onIosBackground,
-//     ),
-//   );
-//   service.startService();
-// }
+      // you have to enable background fetch capability on xcode project
+      onBackground: onIosBackground,
+    ),
+  );
+  service.startService();
+}
 
-// void onStart(ServiceInstance service) async {
-//   FlutterBlue.instance.startScan(timeout: Duration(seconds: 4));
-// }
+void onStart(ServiceInstance service) async {
+  FlutterBlue.instance.startScan(timeout: Duration(seconds: 4));
+}
 
-// bool onIosBackground(ServiceInstance service) {
-//   // WidgetsFlutterBinding.ensureInitialized();
-//   onStart(service);
-//   print('FLUTTER BACKGROUND FETCH');
+bool onIosBackground(ServiceInstance service) {
+  // WidgetsFlutterBinding.ensureInitialized();
+  onStart(service);
+  print('FLUTTER BACKGROUND FETCH');
 
-//   return true;
-// }
+  return true;
+}
 
 class FlutterBlueApp extends StatefulWidget {
   @override
