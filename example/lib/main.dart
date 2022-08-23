@@ -4,15 +4,93 @@
 
 import 'dart:async';
 import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_blue_example/provider.dart';
 import 'package:flutter_blue_example/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 
-void main() {
+var serviceUUID = Guid('0000f00d-1212-efde-1523-785fef13d123');
+BluetoothDevice _device;
+FlutterBlue _flutterBlue = FlutterBlue.instance;
+
+void main() async {
+  await initializeService();
+
   runApp(FlutterBlueApp());
+}
+
+scan() async {
+  var connectedDevices = await FlutterBlue.instance.connectedDevices;
+  bool isButtonConnected = false;
+  connectedDevices.forEach((e) {
+    print("device id: ${e.name}");
+    if(isButtonConnected){
+        return;
+      }
+      if(e.name == 'Fanstel'){
+        isButtonConnected=true;
+      }
+   });
+
+   if(connectedDevices.isEmpty){
+    FlutterBlue.instance.scan().listen((scanResult) async { 
+      print('something');
+      if (scanResult.advertisementData.serviceUuids.contains((Platform.isIOS)
+            ? serviceUUID.toString().toUpperCase()
+            : serviceUUID.toString())) {
+          print("res=" + scanResult.toString());
+          print('device=${scanResult.device.toString()}');
+          _device = scanResult.device;
+          _flutterBlue.stopScan();
+
+          _device.connect();
+          //connectToDevice(_device.name);
+        }
+      });
+   } else {
+    print('connected devices: ${(await _flutterBlue.connectedDevices).first.id.id}');
+   }
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      // this will be executed when app is in foreground or background in separated isolate
+      onStart: onStart,
+
+      // auto start service
+      autoStart: true,
+      isForegroundMode: true,
+    ),
+    iosConfiguration: IosConfiguration(
+      // auto start service
+      autoStart: true,
+
+      // this will be executed when app is in foreground in separated isolate
+      onForeground: onStart,
+
+      // you have to enable background fetch capability on xcode project
+      onBackground: onIosBackground,
+    ),
+  );
+  service.startService();
+}
+
+void onStart(ServiceInstance service) async {
+  FlutterBlue.instance.startScan(timeout: Duration(seconds: 4));
+}
+
+bool onIosBackground(ServiceInstance service) {
+  // WidgetsFlutterBinding.ensureInitialized();
+  onStart(service);
+  print('FLUTTER BACKGROUND FETCH');
+
+  return true;
 }
 
 class FlutterBlueApp extends StatefulWidget {
@@ -23,44 +101,9 @@ class FlutterBlueApp extends StatefulWidget {
 class _FlutterBlueAppState extends State<FlutterBlueApp> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
-    
-    // FlutterBlue.instance.startScan(timeout: Duration(seconds: 4));
-    
-    // StreamBuilder<List<ScanResult>>(
-    //   stream: FlutterBlue.instance.scanResults,
-    //   initialData: [],
-    //   builder: (c, snapshot) {
-    //     // snapshot.data!.map((r) {
-    //     //   if (r.device.name == 'Fanstel') {
-    //     //     //Timer.periodic(Duration(seconds: 5), (timer) {
-    //     //     r.device.connect();
-    //     //     //});
-    //     //     return print('fuck yo life');
-    //     //   }
-    //     // });
-    //     return Column(
-    //       children: snapshot.data!
-    //           .map(
-    //             (r) => ScanResultTile(
-    //               result: r,
-    //               //The onTap will redirect to the specific device options page
-    //               onTap: () => Navigator.of(context)
-    //                   .push(MaterialPageRoute(builder: (context) {
-    //                 print('Fanstel: ${r.device.name}');
-    //                 r.device.connect();
-    //                 // providerData.scanedDevice = r.device;
-    //                 // providerData.refreshValues();
-    //                 return DeviceScreen(device: r.device);
-    //               })),
-    //             ),
-    //           )
-    //           .toList(),
-    //     );
-    //   },
-    // );
+    // BluetoothManager().scan();
+    // NotificationService().initNotifications(super.context);
   }
 
   @override
@@ -86,9 +129,9 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
 
 //Initial Loading Launch Page
 class BluetoothOffScreen extends StatelessWidget {
-  const BluetoothOffScreen({Key? key, this.state}) : super(key: key);
+  const BluetoothOffScreen({Key key, this.state}) : super(key: key);
 
-  final BluetoothState? state;
+  final BluetoothState state;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +179,7 @@ class FindDevicesScreen extends StatelessWidget {
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data!
+                  children: snapshot.data
                       .map((d) => ListTile(
                             title: Text(d.name),
                             subtitle: Text(d.id.toString()),
@@ -165,34 +208,25 @@ class FindDevicesScreen extends StatelessWidget {
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
                 builder: (c, snapshot) {
-                  snapshot.data!.map((r) {
-                    if (r.device.name == 'Fanstel') {
-                      print(r.device.name);
-                      //Timer.periodic(Duration(seconds: 5), (timer) {
-                      r.device.connect();
-                      //});
-                    } else {
-                      print('not Fanstel');
-                    }
-                  });
+                  // snapshot.data!.map((r) {
+                  //   if (r.device.name == 'Fanstel') {
+                  //     print(r.device.name);
+                  //     //Timer.periodic(Duration(seconds: 5), (timer) {
+                  //     r.device.connect();
+                  //     //});
+                  //   } else {
+                  //     print('not Fanstel');
+                  //   }
+                  // });
                   return Column(
-                    children: snapshot.data!
+                    children: snapshot.data
                         .map(
                           (r) => ScanResultTile(
                             result: r,
                             //The onTap will redirect to the specific device options page
                             onTap: () => Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (context) {
-                              print(r.device.name);
-                              if (r.device.name == 'Fanstel') {
-                                print(r.device.name);
-                                //Timer.periodic(Duration(seconds: 5), (timer) {
-                                r.device.connect();
-                                //});
-                              } else {
-                                print('not Fanstel');
-                              }
-                              //r.device.connect();
+                              r.device.connect();
                               return DeviceScreen(device: r.device);
                             })),
                           ),
@@ -209,7 +243,7 @@ class FindDevicesScreen extends StatelessWidget {
         stream: FlutterBlue.instance.isScanning,
         initialData: false,
         builder: (c, snapshot) {
-          if (snapshot.data!) {
+          if (snapshot.data) {
             return FloatingActionButton(
               child: Icon(Icons.stop),
               onPressed: () => FlutterBlue.instance.stopScan(),
@@ -229,7 +263,7 @@ class FindDevicesScreen extends StatelessWidget {
 
 //Specific device options screen (when tapping connect from devices list)
 class DeviceScreen extends StatelessWidget {
-  const DeviceScreen({Key? key, required this.device}) : super(key: key);
+  const DeviceScreen({Key key, @required this.device}) : super(key: key);
 
   final BluetoothDevice device;
 
@@ -288,7 +322,7 @@ class DeviceScreen extends StatelessWidget {
             stream: device.state,
             initialData: BluetoothDeviceState.connecting,
             builder: (c, snapshot) {
-              VoidCallback? onPressed;
+              VoidCallback onPressed;
               String text;
               switch (snapshot.data) {
                 //This is the connect/disconnect appbar button at specific device page
@@ -335,7 +369,7 @@ class DeviceScreen extends StatelessWidget {
                   stream: device.isDiscoveringServices,
                   initialData: false,
                   builder: (c, snapshot) => IndexedStack(
-                    index: snapshot.data! ? 1 : 0,
+                    index: snapshot.data ? 1 : 0,
                     children: <Widget>[
                       //This is the refresh button that pops services
                       IconButton(
@@ -375,7 +409,7 @@ class DeviceScreen extends StatelessWidget {
               initialData: [],
               builder: (c, snapshot) {
                 return Column(
-                  children: _buildServiceTiles(snapshot.data!),
+                  children: _buildServiceTiles(snapshot.data),
                 );
               },
             ),
